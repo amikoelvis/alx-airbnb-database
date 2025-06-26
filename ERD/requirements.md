@@ -89,4 +89,4 @@
 
 This diagram was generated using [Vertabelo](https://vertabelo.com) and exported as PNG.
 
-![Airbnb ERD](./alx-airbnb-database-erd-2025-06-25_19-47.png)
+![Airbnb ERD](./alx-airbnb-database-erd-2025-06-26_13-40.png)
