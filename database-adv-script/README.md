@@ -107,3 +107,61 @@ SELECT
 FROM users u
 RIGHT JOIN bookings b ON u.user_id = b.user_id;
 ```
+
+---
+
+# 🔄 SQL Subqueries Practice
+
+## 🎯 Objective
+
+Practice writing both **correlated** and **non-correlated** subqueries using a normalized Airbnb-style database schema. The goal is to filter data using nested queries while ensuring all relevant fields are retrieved.
+
+---
+
+## ✅ 1. Non-Correlated Subquery – Properties with High Average Ratings
+
+**Task**: Find all properties where the **average review rating** is greater than `4.0`.
+
+```sql
+SELECT
+    p.property_id,
+    p.host_id,
+    p.name,
+    p.description,
+    p.location,
+    p.price_per_night,
+    p.created_at,
+    p.updated_at
+FROM properties p
+WHERE p.property_id IN (
+    SELECT r.property_id
+    FROM reviews r
+    GROUP BY r.property_id
+    HAVING AVG(r.rating) > 4.0
+);
+```
+
+---
+
+## ✅ 2. Correlated Subquery – Users with More Than 3 Bookings
+
+**Task**: Task: Find all users who have made more than three bookings..
+
+```sql
+SELECT
+    u.user_id,
+    u.first_name,
+    u.last_name,
+    u.email,
+    u.password_hash,
+    u.phone_number,
+    u.role,
+    u.created_at
+FROM users u
+WHERE (
+    SELECT COUNT(*)
+    FROM bookings b
+    WHERE b.user_id = u.user_id
+) > 3;
+
+```
