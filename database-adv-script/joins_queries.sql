@@ -36,6 +36,7 @@ SELECT
     r.created_at AS review_created_at
 FROM properties p
 LEFT JOIN reviews r ON p.property_id = r.property_id;
+ORDER BY p.property_id, r.created_at;
 
 -- FULL OUTER JOIN (Emulated) – All Users and All Bookings, Even Unlinked Ones
 -- Emulates FULL OUTER JOIN using UNION in MySQL
