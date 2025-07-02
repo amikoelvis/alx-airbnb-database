@@ -1,7 +1,7 @@
 -- BEFORE INDEXING: PERFORMANCE TESTS
 
 -- 1. Bookings per user (before indexing)
-EXPLAIN
+EXPLAIN ANALYZE
 SELECT 
     u.first_name,
     COUNT(b.booking_id) AS total_bookings
@@ -10,7 +10,7 @@ JOIN bookings b ON u.user_id = b.user_id
 GROUP BY u.first_name;
 
 -- 2. Properties by host (before indexing)
-EXPLAIN
+EXPLAIN ANALYZE
 SELECT 
     property_id,
     name,
@@ -19,7 +19,7 @@ FROM properties
 WHERE host_id = 'sample-host-id';
 
 -- 3. Booking lookup by date range (before indexing)
-EXPLAIN
+EXPLAIN ANALYZE
 SELECT 
     booking_id,
     user_id,
@@ -29,7 +29,7 @@ SELECT
 FROM bookings
 WHERE start_date >= '2025-01-01' AND end_date <= '2025-12-31';
 
--- INDEXES
+-- CREATE INDEXES
 
 -- Users
 CREATE INDEX idx_users_email ON users(email);
@@ -48,7 +48,7 @@ CREATE INDEX idx_properties_price ON properties(price_per_night);
 -- AFTER INDEXING: PERFORMANCE TESTS
 
 -- 1. Bookings per user (after indexing)
-EXPLAIN
+EXPLAIN ANALYZE
 SELECT 
     u.first_name,
     COUNT(b.booking_id) AS total_bookings
@@ -57,7 +57,7 @@ JOIN bookings b ON u.user_id = b.user_id
 GROUP BY u.first_name;
 
 -- 2. Properties by host (after indexing)
-EXPLAIN
+EXPLAIN ANALYZE
 SELECT 
     property_id,
     name,
@@ -66,7 +66,7 @@ FROM properties
 WHERE host_id = 'sample-host-id';
 
 -- 3. Booking lookup by date range (after indexing)
-EXPLAIN
+EXPLAIN ANALYZE
 SELECT 
     booking_id,
     user_id,
