@@ -269,6 +269,7 @@ SELECT
     ranked.created_at,
     ranked.updated_at,
     ranked.total_bookings,
+    ROW_NUMBER() OVER (ORDER BY ranked.total_bookings DESC) AS row_number,
     RANK() OVER (ORDER BY ranked.total_bookings DESC) AS booking_rank
 FROM (
     SELECT
@@ -297,10 +298,9 @@ FROM (
 
 ---
 
-📌 **Explanation:**
+🔍 **Explanation:**
+ROW_NUMBER() gives a strict sequence (1, 2, 3…) — even when booking counts are tied.
 
-First, COUNT() aggregates the number of bookings per property.
+RANK() gives equal ranking for ties (e.g., 1, 1, 3…).
 
-Then, RANK() assigns a rank to each property based on booking volume.
-
-All fields from the properties table are included to provide full context on each listing.
+Both rankings help you analyze and compare property performance more flexibly.

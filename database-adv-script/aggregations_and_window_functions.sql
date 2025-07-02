@@ -32,7 +32,8 @@ SELECT
     ranked.created_at,
     ranked.updated_at,
     ranked.total_bookings,
-    ROW_NUMBER() OVER (ORDER BY ranked.total_bookings DESC) AS booking_row_number
+    ROW_NUMBER() OVER (ORDER BY ranked.total_bookings DESC) AS row_number,
+    RANK() OVER (ORDER BY ranked.total_bookings DESC) AS booking_rank
 FROM (
     SELECT 
         p.property_id,
