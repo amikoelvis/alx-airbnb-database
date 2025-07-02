@@ -35,6 +35,10 @@ INNER JOIN users u ON b.user_id = u.user_id;
 
 ---
 
+🔎 **Explanation:** Returns only bookings that have a matching user. Unmatched data from either table is excluded.
+
+---
+
 ## ✅ 2. LEFT JOIN – Properties and Reviews
 
 **Retrieve all properties and their reviews, including properties that have no reviews.**
@@ -58,6 +62,12 @@ SELECT
 FROM properties p
 LEFT JOIN reviews r ON p.property_id = r.property_id;
 ```
+
+---
+
+🔎 Explanation: Returns all properties, along with any matching reviews. If a property has no reviews, the review fields will be NULL.
+
+---
 
 ## ✅ 3. FULL OUTER JOIN (Emulated) – Users and Bookings
 
@@ -110,6 +120,14 @@ RIGHT JOIN bookings b ON u.user_id = b.user_id;
 
 ---
 
+**Explanation:** Combines the results of a LEFT JOIN and a RIGHT JOIN to simulate a FULL OUTER JOIN. Ensures:
+
+Users without bookings are included.
+
+Bookings not linked to valid users are also included.
+
+---
+
 # 🔄 SQL Subqueries Practice
 
 ## 🎯 Objective
@@ -143,6 +161,16 @@ WHERE p.property_id IN (
 
 ---
 
+📌 **Explanation:**
+
+The subquery calculates the average rating for each property.
+
+The outer query retrieves all property details for those meeting the rating threshold.
+
+This is a non-correlated subquery — it runs independently of the outer query.
+
+---
+
 ## ✅ 2. Correlated Subquery – Users with More Than 3 Bookings
 
 **Task**: Task: Find all users who have made more than three bookings..
@@ -165,3 +193,114 @@ WHERE (
 ) > 3;
 
 ```
+
+---
+
+📌 **Explanation:**
+
+The subquery counts bookings per user by referencing the outer query’s u.user_id.
+
+Users with more than 3 bookings are returned.
+
+This is a correlated subquery — it runs once per row in the outer query.
+
+---
+
+# 📊 SQL Aggregations & Window Functions Practice
+
+## 🎯 Objective
+
+Apply SQL **aggregation functions** and **window functions** to analyze data from a normalized Airbnb-style database schema.
+
+---
+
+## ✅ 1. Aggregation: Total Bookings per User
+
+**Task**: Use `COUNT()` and `GROUP BY` to find the total number of bookings made by each user.
+
+```sql
+SELECT
+    u.user_id,
+    u.first_name,
+    u.last_name,
+    u.email,
+    u.password_hash,
+    u.phone_number,
+    u.role,
+    u.created_at,
+    COUNT(b.booking_id) AS total_bookings
+FROM users u
+LEFT JOIN bookings b ON u.user_id = b.user_id
+GROUP BY
+    u.user_id,
+    u.first_name,
+    u.last_name,
+    u.email,
+    u.password_hash,
+    u.phone_number,
+    u.role,
+    u.created_at;
+```
+
+---
+
+📌 **Explanation:**
+
+COUNT(b.booking_id) counts how many bookings each user has made.
+
+LEFT JOIN ensures users with zero bookings are included.
+
+All fields from the users table are selected for completeness and potential auditing.
+
+---
+
+## ✅ 2. Window Function: Rank Properties by Total Bookings
+
+**Task**: Use a window function to rank properties based on the total number of bookings they’ve received..
+
+```sql
+SELECT
+    ranked.property_id,
+    ranked.host_id,
+    ranked.name,
+    ranked.description,
+    ranked.location,
+    ranked.price_per_night,
+    ranked.created_at,
+    ranked.updated_at,
+    ranked.total_bookings,
+    RANK() OVER (ORDER BY ranked.total_bookings DESC) AS booking_rank
+FROM (
+    SELECT
+        p.property_id,
+        p.host_id,
+        p.name,
+        p.description,
+        p.location,
+        p.price_per_night,
+        p.created_at,
+        p.updated_at,
+        COUNT(b.booking_id) AS total_bookings
+    FROM properties p
+    LEFT JOIN bookings b ON p.property_id = b.property_id
+    GROUP BY
+        p.property_id,
+        p.host_id,
+        p.name,
+        p.description,
+        p.location,
+        p.price_per_night,
+        p.created_at,
+        p.updated_at
+) AS ranked;
+```
+
+---
+
+📌 **Explanation:**
+
+First, COUNT() aggregates the number of bookings per property.
+
+Then, RANK() assigns a rank to each property based on booking volume.
+
+All fields from the properties table are included to provide full context on each listing.
